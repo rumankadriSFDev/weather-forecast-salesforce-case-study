@@ -36,7 +36,7 @@ public with sharing class weatherForecastFlowHelper {
     
     public class WeatherForecastException extends Exception {}
     
-    @InvocableMethod(label='Get Weather Forecast'description='Fetch hourly weather forecast for a selected city and date')
+    @InvocableMethod(label='Get Weather Forecast' description='Fetch hourly weather forecast for a selected city and date')
     public static List<Result> getWeatherForecast(List<Request> requests) {
         List<Result> results = new List<Result>();
         

@@ -48,7 +48,7 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
-        <limit>10</limit>
+        <limit>15</limit>
         <object>Weather_City__mdt</object>
         <outputAssignments>
             <assignToReference>varSelectedCity</assignToReference>
@@ -332,7 +332,7 @@
                     </styleProperties>
                     <validationRule>
                         <errorMessage>&lt;p&gt;Past dates are not allowed.&lt;/p&gt;</errorMessage>
-                        <formulaExpression>{!Date} &gt; TODAY()</formulaExpression>
+                        <formulaExpression>{!Date} &gt;= TODAY()</formulaExpression>
                     </validationRule>
                 </fields>
                 <inputParameters>
