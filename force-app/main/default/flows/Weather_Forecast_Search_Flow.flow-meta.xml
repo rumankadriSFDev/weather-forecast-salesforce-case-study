@@ -8,13 +8,16 @@
         <actionName>weatherForecastFlowHelper</actionName>
         <actionType>apex</actionType>
         <connector>
-            <targetReference>Forecast_Result</targetReference>
+            <targetReference>Data_Received</targetReference>
         </connector>
+        <faultConnector>
+            <targetReference>faultPath1</targetReference>
+        </faultConnector>
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>cityName</name>
             <value>
-                <elementReference>varSelectedCity</elementReference>
+                <elementReference>cityOptions</elementReference>
             </value>
         </inputParameters>
         <inputParameters>
@@ -35,6 +38,31 @@
             <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
         </value>
     </customProperties>
+    <decisions>
+        <name>Data_Received</name>
+        <label>Data Received ?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Error_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>getDataFromAPI.success</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_Weather_Search_Record</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <description>This flow allows users to select a pre-configured city and forecast date, retrieve hourly weather forecast data from the Open-Meteo API, and log each weather search in Salesforce for reporting and analysis purposes.</description>
     <dynamicChoiceSets>
         <name>cityOption</name>
@@ -50,15 +78,16 @@
         </filters>
         <limit>15</limit>
         <object>Weather_City__mdt</object>
-        <outputAssignments>
-            <assignToReference>varSelectedCity</assignToReference>
-            <field>City_Name__c</field>
-        </outputAssignments>
         <sortField>City_Name__c</sortField>
         <sortOrder>Asc</sortOrder>
         <valueField>City_Name__c</valueField>
     </dynamicChoiceSets>
     <environments>Default</environments>
+    <formulas>
+        <name>userName</name>
+        <dataType>String</dataType>
+        <expression>{!$User.LastName} + &apos; &apos; + {!$User.FirstName}</expression>
+    </formulas>
     <interviewLabel>Weather_Forecast_Search_Flow {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Weather_Forecast_Search_Flow</label>
     <processMetadataValues>
@@ -80,6 +109,176 @@
         </value>
     </processMetadataValues>
     <processType>Flow</processType>
+    <recordCreates>
+        <name>Create_Weather_Search_Record</name>
+        <label>Create Weather Search Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Forecast_Result</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>faultPath2</targetReference>
+        </faultConnector>
+        <inputAssignments>
+            <field>Forecast_Date__c</field>
+            <value>
+                <elementReference>Date</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Location__c</field>
+            <value>
+                <elementReference>cityOptions</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Search_DateTime__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Timezone__c</field>
+            <value>
+                <elementReference>getDataFromAPI.timezone</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>User_Name__c</field>
+            <value>
+                <elementReference>userName</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Weather_Search__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <screens>
+        <name>Error_Screen</name>
+        <label>Error Screen</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Select_City_And_Date</targetReference>
+        </connector>
+        <fields>
+            <name>errorHeader</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;🌤 &lt;/span&gt;&lt;strong style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;Weather Forecast&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>errorMsg</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;color: rgb(241, 9, 9);&quot;&gt;{!getDataFromAPI.message}&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>faultPath1</name>
+        <label>faultPath1</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Select_City_And_Date</targetReference>
+        </connector>
+        <fields>
+            <name>headerFaultPath1</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;🌤 &lt;/span&gt;&lt;strong style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;Weather Forecast&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>msgFaultPath1</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;color: rgb(241, 13, 13);&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;span style=&quot;color: rgb(250, 8, 8);&quot;&gt;&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>faultPath2</name>
+        <label>faultPath2</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <isGoTo>true</isGoTo>
+            <targetReference>Select_City_And_Date</targetReference>
+        </connector>
+        <fields>
+            <name>headerFaultPath2</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;🌤 &lt;/span&gt;&lt;strong style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;Weather Forecast&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>msgFaultPath2</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;color: rgb(241, 13, 13);&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;span style=&quot;color: rgb(250, 8, 8);&quot;&gt;&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
     <screens>
         <name>Forecast_Result</name>
         <label>Forecast Result</label>
@@ -113,7 +312,7 @@
                 <fieldType>Region</fieldType>
                 <fields>
                     <name>city</name>
-                    <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;📍 City : {!varSelectedCity}&lt;/span&gt;&lt;/p&gt;</fieldText>
+                    <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px;&quot;&gt;📍 City : {!cityOptions}&lt;/span&gt;&lt;/p&gt;</fieldText>
                     <fieldType>DisplayText</fieldType>
                     <styleProperties>
                         <verticalAlignment>
@@ -365,12 +564,5 @@
             <targetReference>Select_City_And_Date</targetReference>
         </connector>
     </start>
-    <status>Draft</status>
-    <variables>
-        <name>varSelectedCity</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>true</isOutput>
-    </variables>
+    <status>Active</status>
 </Flow>
