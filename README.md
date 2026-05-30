@@ -1,18 +1,143 @@
-# Salesforce DX Project: Next Steps
+# Weather Forecast Search Application
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+## Overview
 
-## How Do You Plan to Deploy Your Changes?
+This Salesforce application allows users to select a pre-configured city and a forecast date, retrieve hourly weather forecast data from the Open-Meteo API, and log each search for reporting and analysis purposes.
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+## Features
 
-## Configure Your Salesforce DX Project
+### User Story 1 - Weather Forecast Search
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+* Select a city from a pre-configured list maintained in Custom Metadata.
+* Select a forecast date (today or future dates only).
+* Retrieve hourly temperature forecasts from the Open-Meteo API.
+* Display:
 
-## Read All About It
+  * City
+  * Forecast Date
+  * Timezone
+  * Hourly Time List
+  * Hourly Temperature List
+* Error handling for API and system failures.
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+### User Story 2 - Weather Search Logging
+
+Each successful search creates a Weather Search record containing:
+
+* User Name
+* Search Date/Time
+* Forecast Date
+* Location
+* Timezone
+
+Search history can be viewed through Salesforce Reports.
+
+---
+
+## Technical Design
+
+### Salesforce Components
+
+#### Flow
+
+* Weather_Forecast_Search_Flow
+
+#### Apex
+
+* weatherForecastFlowHelper
+* weatherForecastFlowHelperTest
+
+#### Custom Metadata
+
+* Weather_City__mdt
+
+#### Custom Object
+
+* Weather_Search__c
+
+#### External Integration
+
+* Open-Meteo Weather API
+
+---
+
+## Supported Cities
+
+### India
+
+* Mumbai
+* Delhi
+* Bengaluru
+* Chennai
+* Hyderabad
+* Kolkata
+* Pune
+
+### International
+
+* London
+* New York
+* Tokyo
+* Paris
+* Sydney
+* Dubai
+
+---
+
+## Integration Details
+
+Weather data is retrieved using the Open-Meteo API:
+
+https://api.open-meteo.com
+
+The application retrieves hourly temperature forecasts based on the selected city and forecast date.
+
+---
+
+## Report
+
+Report Name:
+
+Weather Search History Report
+
+Available Fields:
+
+* User Name
+* Forecast Date
+* Search DateTime
+* Location
+* Timezone
+
+---
+
+## Custom Salesforce App
+
+A custom Lightning application named **Weatherly** was created to provide a dedicated user experience for the Weather Forecast solution.
+
+The app includes:
+- Weather Forecast Search Flow
+- Weather Search History Records
+- Weather Search Reports
+
+---
+
+## Deployment Steps
+
+1. Deploy metadata to Salesforce Org.
+2. Ensure Remote Site Setting for Open-Meteo is configured.
+3. Verify Weather City Custom Metadata records are available.
+4. Activate Weather_Forecast_Search_Flow.
+5. Run the application.
+
+---
+
+## AI Usage Declaration
+
+During the development of this solution, AI tools were used occasionally to support the development process and help resolve technical challenges.
+
+Specifically, AI was used for:
+
+* Reviewing and improving Apex test classes to ensure adequate code coverage and test quality.
+* Troubleshooting Apex compilation and deployment issues encountered during development.
+* Discussing alternative implementation approaches and validating design decisions.
+* Suggesting minor code optimizations and improvements to error handling.
