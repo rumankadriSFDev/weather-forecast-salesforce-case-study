@@ -44,7 +44,8 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Error_Screen</targetReference>
+            <isGoTo>true</isGoTo>
+            <targetReference>faultPath1</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -118,7 +119,8 @@
             <targetReference>Forecast_Result</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>faultPath2</targetReference>
+            <isGoTo>true</isGoTo>
+            <targetReference>faultPath1</targetReference>
         </faultConnector>
         <inputAssignments>
             <field>Forecast_Date__c</field>
@@ -153,48 +155,6 @@
         <object>Weather_Search__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
-    <screens>
-        <name>Error_Screen</name>
-        <label>Error Screen</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>false</allowPause>
-        <connector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Select_City_And_Date</targetReference>
-        </connector>
-        <fields>
-            <name>errorHeader</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;🌤 &lt;/span&gt;&lt;strong style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;Weather Forecast&lt;/strong&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <fields>
-            <name>errorMsg</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;color: rgb(241, 9, 9);&quot;&gt;{!getDataFromAPI.message}&lt;/strong&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
-        <showFooter>true</showFooter>
-        <showHeader>false</showHeader>
-    </screens>
     <screens>
         <name>faultPath1</name>
         <label>faultPath1</label>
@@ -233,49 +193,7 @@
                 </width>
             </styleProperties>
         </fields>
-        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
-        <showFooter>true</showFooter>
-        <showHeader>false</showHeader>
-    </screens>
-    <screens>
-        <name>faultPath2</name>
-        <label>faultPath2</label>
-        <locationX>0</locationX>
-        <locationY>0</locationY>
-        <allowBack>false</allowBack>
-        <allowFinish>true</allowFinish>
-        <allowPause>false</allowPause>
-        <connector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Select_City_And_Date</targetReference>
-        </connector>
-        <fields>
-            <name>headerFaultPath2</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;🌤 &lt;/span&gt;&lt;strong style=&quot;font-size: 16px; background-color: rgb(255, 255, 255);&quot;&gt;Weather Forecast&lt;/strong&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <fields>
-            <name>msgFaultPath2</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;color: rgb(241, 13, 13);&quot;&gt;{!$Flow.FaultMessage}&lt;/span&gt;&lt;span style=&quot;color: rgb(250, 8, 8);&quot;&gt;&lt;span class=&quot;ql-cursor&quot;&gt;﻿&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-            <styleProperties>
-                <verticalAlignment>
-                    <stringValue>top</stringValue>
-                </verticalAlignment>
-                <width>
-                    <stringValue>12</stringValue>
-                </width>
-            </styleProperties>
-        </fields>
-        <nextOrFinishButtonLabel>Done</nextOrFinishButtonLabel>
+        <nextOrFinishButtonLabel>OK</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>

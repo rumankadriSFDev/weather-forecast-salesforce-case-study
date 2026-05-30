@@ -103,7 +103,6 @@ public with sharing class weatherForecastFlowHelper {
                 res.timezone = timezone;
                 res.timeList = String.join(timeLines, '\n');
                 res.temperatureList = String.join(tempLines, '\n');
-                
             } catch (Exception e) {
                 res.success = false;
                 res.message = e.getMessage();
