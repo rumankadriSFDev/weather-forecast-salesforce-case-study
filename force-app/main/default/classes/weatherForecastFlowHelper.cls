@@ -36,6 +36,7 @@ public with sharing class weatherForecastFlowHelper {
     
     public class WeatherForecastException extends Exception {}
     
+    // Invocable method called from Flow to retrieve weather forecast data
     @InvocableMethod(label='Get Weather Forecast' description='Fetch hourly weather forecast for a selected city and date')
     public static List<Result> getWeatherForecast(List<Request> requests) {
         List<Result> results = new List<Result>();
@@ -53,6 +54,7 @@ public with sharing class weatherForecastFlowHelper {
                     String.valueOf(req.forecastDate.month()).leftPad(2, '0') + '-' +
                     String.valueOf(req.forecastDate.day()).leftPad(2, '0');
                 
+                // Build Open-Meteo API endpoint dynamically based on selected city and date
                 String endpoint = 'https://api.open-meteo.com/v1/forecast' +'?latitude=' + String.valueOf(cityInfo.latitude) +
                     '&longitude=' + String.valueOf(cityInfo.longitude) + '&hourly=temperature_2m' +
                     '&start_date=' + isoDate + '&end_date=' + isoDate;
@@ -69,6 +71,7 @@ public with sharing class weatherForecastFlowHelper {
                     throw new WeatherForecastException('Open-Meteo API error: ' + httpRes.getStatus());
                 }
                 
+                // Deserialize API response and extract hourly forecast information
                 Map<String, Object> apiBody = (Map<String, Object>) JSON.deserializeUntyped(httpRes.getBody());
                 
                 String timezone = (String) apiBody.get('timezone');
@@ -90,6 +93,7 @@ public with sharing class weatherForecastFlowHelper {
                 List<String> timeLines = new List<String>();
                 List<String> tempLines = new List<String>();
                 
+                // Format hourly time and temperature data for display in Flow
                 for (Integer i = 0; i < count; i++) {
                     String rawTime = String.valueOf(times[i]);
                     String hourOnly = rawTime.substring(11, 16);
@@ -112,6 +116,7 @@ public with sharing class weatherForecastFlowHelper {
         return results;
     }
     
+    // Return city coordinates from Custom Metadata configuration
     private static WeatherCityInfo getCityInfo(String cityName) {
         List<Weather_City__mdt> cities = [SELECT Latitude__c, Longitude__c FROM Weather_City__mdt WHERE City_Name__c = :cityName 
                                           AND Active__c = true LIMIT 1];
